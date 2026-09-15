@@ -1,0 +1,226 @@
+{
+  "_说明": "小说世界 - 角色技能系统JSON示例。格式对应 CharacterSkillSet.to_dict() 输出，可通过 CharacterSkillSet.from_dict() 反序列化。",
+  "_版本": "1.0",
+  "characters": [
+    {
+      "character_id": "li_qingyun",
+      "character_name": "李青云",
+      "character_type": "主角",
+      "passive_skills": [
+        {
+          "name": "剑心通明",
+          "skill_type": "被动",
+          "description": "能感知方圆百里内灵力波动，但无法分辨善恶",
+          "tags": ["感知", "剑道", "灵力感应"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "active_skills": [
+        {
+          "name": "万剑归宗",
+          "skill_type": "主动",
+          "description": "汇聚灵力化剑攻击，范围5格，持续3tick",
+          "tags": ["攻击", "剑道", "范围攻击", "修炼"],
+          "trigger_condition": "主动释放，需要消耗灵力",
+          "effect_range": 5,
+          "duration": 3,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "limits": [
+        {
+          "name": "谋略短板",
+          "skill_type": "限制",
+          "description": "不擅长应对阴谋诡计，对精神类攻击几乎无防御力",
+          "tags": ["弱点", "精神防御"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": ["阴谋诡计", "精神攻击", "谋略"],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "costs": [
+        {
+          "name": "灵力反噬",
+          "skill_type": "代价",
+          "description": "每次使用万剑归宗后，三天内灵力恢复速度减半",
+          "tags": ["副作用", "灵力消耗"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": ["灵力恢复速度减半，持续三天"],
+          "karma_debt": "过度使用剑道之力，可能引发剑心蒙尘的心魔"
+        }
+      ],
+      "ultimate_goal": "重振师门天机阁",
+      "current_goal": "前往落星崖寻找师门遗失的镇派剑谱"
+    },
+    {
+      "character_id": "mo_zun_xuanming",
+      "character_name": "魔尊玄冥",
+      "character_type": "反派",
+      "passive_skills": [
+        {
+          "name": "魔气侵蚀",
+          "skill_type": "被动",
+          "description": "周围3格内修仙者灵力运转受阻，削弱30%",
+          "tags": ["魔道", "范围削弱", "灵力压制"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "active_skills": [
+        {
+          "name": "暗影吞噬",
+          "skill_type": "主动",
+          "description": "发动黑暗力量吞噬目标，需要近身接触",
+          "tags": ["攻击", "魔道", "近身", "暗影"],
+          "trigger_condition": "近身接触时发动",
+          "effect_range": 1,
+          "duration": 1,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "limits": [
+        {
+          "name": "阵法禁制",
+          "skill_type": "限制",
+          "description": "无法进入有强大阵法保护的区域，对光明系法术极度敏感",
+          "tags": ["弱点", "阵法", "光明系"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": ["强大阵法保护的区域", "光明系法术"],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "costs": [
+        {
+          "name": "理智丧失",
+          "skill_type": "代价",
+          "description": "使用暗影吞噬会短暂失去理智，可能误伤同伴",
+          "tags": ["副作用", "失控"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": ["短暂失去理智，可能误伤同伴"],
+          "karma_debt": "频繁使用暗影之力，魔化程度加深，人道渐远"
+        }
+      ],
+      "ultimate_goal": "打破天道枷锁，让魔族重获自由",
+      "current_goal": "阻止任何人接近落星崖的远古封印"
+    },
+    {
+      "character_id": "su_wan",
+      "character_name": "苏晚",
+      "character_type": "女主",
+      "passive_skills": [
+        {
+          "name": "灵犀直觉",
+          "skill_type": "被动",
+          "description": "对危险有预感，但无法判断危险来源",
+          "tags": ["感知", "直觉", "危险预感"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "active_skills": [
+        {
+          "name": "净化之光",
+          "skill_type": "主动",
+          "description": "治愈受伤的修仙者，范围2格",
+          "tags": ["治愈", "光明系", "范围辅助", "修炼"],
+          "trigger_condition": "对目标释放治愈之光",
+          "effect_range": 2,
+          "duration": 1,
+          "blind_spots": [],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "limits": [
+        {
+          "name": "战力薄弱",
+          "skill_type": "限制",
+          "description": "自身战斗力极弱，无法主动攻击",
+          "tags": ["弱点", "无攻击力"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": ["主动攻击", "正面战斗"],
+          "side_effects": [],
+          "karma_debt": ""
+        }
+      ],
+      "costs": [
+        {
+          "name": "生命力反噬",
+          "skill_type": "代价",
+          "description": "过度使用治愈之力会反噬自身生命力",
+          "tags": ["副作用", "生命消耗"],
+          "trigger_condition": "",
+          "effect_range": 0,
+          "duration": 0,
+          "blind_spots": [],
+          "side_effects": ["生命力下降，过度使用可能导致昏厥"],
+          "karma_debt": "每次治愈他人都是在消耗自身本源，需要天命之花来根治"
+        }
+      ],
+      "ultimate_goal": "找到传说中能治愈一切的天命之花",
+      "current_goal": "跟随李青云，因为直觉告诉她此行至关重要"
+    }
+  ],
+  "world_skills": {
+    "world_name": "修仙界",
+    "rules": [
+      {
+        "name": "灵气潮汐",
+        "description": "每隔一段时间灵气浓度变化，影响所有修炼类技能",
+        "effect": "修炼类技能效果在 0.8~1.2 之间随灵气潮汐波动",
+        "affects_tags": ["修炼"],
+        "modifier": 1.0
+      },
+      {
+        "name": "天道压制",
+        "description": "魔道功法在正道领地效果减半",
+        "effect": "魔道类技能在正道势力范围内 modifier 降为 0.5",
+        "affects_tags": ["魔道"],
+        "modifier": 0.5
+      },
+      {
+        "name": "禁制之地",
+        "description": "落星崖等禁区中，所有感知类技能失效",
+        "effect": "在禁区内，感知类技能 modifier 降为 0.0（完全无效）",
+        "affects_tags": ["感知"],
+        "modifier": 0.0
+      }
+    ]
+  },
+  "_用法示例": {
+    "加载角色技能": "CharacterSkillSet.from_dict(data)  # data 为上方 characters 数组中的单个元素",
+    "加载世界技能": "WorldSkillSet.from_dict(data)   # data 为上方 world_skills 对象",
+    "注册到引擎": "registry = SkillRegistry(); registry.register_character(skill_set); registry.set_world_skills(world_skill_set)"
+  }
+}

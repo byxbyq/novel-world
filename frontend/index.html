@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小说世界 - 天道叙事引擎</title>
+<link rel="stylesheet" href="style.css?v=20260810f">
+</head>
+<body>
+
+<!-- 项目列表页 -->
+<div id="projects-page" class="page active">
+  <div class="projects-container">
+    <div class="projects-header">
+      <h1>小说世界</h1>
+      <p class="subtitle">天道编织命运，角色碰撞成章</p>
+      <button class="btn-primary" onclick="showNewProjectPage()" style="margin-top:20px;">+ 新建项目</button>
+    </div>
+    <div id="projects-list" class="projects-list">
+      <div class="projects-loading">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 设置向导页 -->
+<div id="setup-page" class="page">
+  <div class="setup-container">
+    <h1>小说世界</h1>
+    <p class="subtitle">天道编织命运，角色碰撞成章</p>
+
+    <!-- 灵感输入区域 -->
+    <div class="inspiration-section" id="inspiration-section">
+      <div class="inspiration-header" id="inspiration-header">
+        <span class="inspiration-title">灵感输入 - 让AI帮你分析</span>
+        <span class="inspiration-arrow" id="inspiration-arrow">▶</span>
+      </div>
+      <div class="inspiration-body" id="inspiration-body">
+        <textarea id="inspiration-input" rows="6" placeholder="在这里粘贴你的灵感、大纲、故事设定...AI会自动分析并提取世界和角色设定"></textarea>
+        <button class="btn-ai-fill" id="btn-analyze-content" onclick="analyzeContent()">✦ AI 分析并填充</button>
+        <div id="inspiration-msg"></div>
+      </div>
+    </div>
+
+    <!-- 全局模型配置入口（所有 Tab 可见） -->
+    <div id="api-key-section" style="margin-bottom:12px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h3 style="margin:0;font-size:15px;">AI 模型</h3>
+        <span class="model-badge unconfigured" id="model-badge" onclick="toggleModelPopover()" title="点击配置 AI 模型">
+          <span class="conn-dot"></span>未配置
+        </span>
+      </div>
+    </div>
+
+    <div class="setup-tabs">
+      <button class="tab active" data-tab="world">世界设定</button>
+      <button class="tab" data-tab="characters">角色设定</button>
+      <button class="tab" data-tab="review">确认启动</button>
+    </div>
+
+    <!-- 确认 -->
+    <div id="tab-review" class="tab-content">
+      <div id="review-content"></div>
+      <div class="engine-config-section" style="border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;">
+        <h3 style="margin:0 0 10px 0;font-size:15px;">引擎配置</h3>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:140px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">总章节数</label>
+            <input type="number" id="config-total-chapters" value="20" min="3" max="100" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:14px;">
+          </div>
+          <div style="flex:1;min-width:140px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">每章行动轮次</label>
+            <input type="number" id="config-ticks" value="20" min="5" max="50" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:14px;">
+          </div>
+          <div style="flex:1;min-width:140px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">叙事视角</label>
+            <select id="config-perspective" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:14px;">
+              <option value="third">第三人称（推荐）</option>
+              <option value="first">第一人称</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="initGame()">启动天道引擎</button>
+    </div>
+
+    <!-- 世界设定 -->
+    <div id="tab-world" class="tab-content">
+      <div class="tab-header">
+        <h3>世界设定</h3>
+        <button class="btn-ai-fill" id="btn-ai-world" onclick="aiFillWorld()">✦ AI 智能填充</button>
+      </div>
+      <div class="form-group">
+        <label>世界名称</label>
+        <input type="text" id="world-name" value="修仙大世界" placeholder="如：修仙大世界">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>类型</label>
+          <select id="world-genre">
+            <option value="玄幻">玄幻</option>
+            <option value="科幻">科幻</option>
+            <option value="末世">末世</option>
+            <option value="都市">都市</option>
+            <option value="神话">神话</option>
+            <option value="奇幻">奇幻</option>
+            <option value="恐怖">恐怖</option>
+            <option value="自定义">自定义</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>时代</label>
+          <select id="world-era">
+            <option value="古代">古代</option>
+            <option value="近现代">近现代</option>
+            <option value="现代">现代</option>
+            <option value="未来">未来</option>
+            <option value="架空">架空</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>世界描述</label>
+        <textarea id="world-desc" rows="3" placeholder="这片大陆分为九重天，修仙者以灵气淬体，渡劫飞升……"></textarea>
+      </div>
+      <div class="form-group">
+        <label>叙事基调</label>
+        <select id="world-tone">
+          <option value="史诗冒险">史诗冒险</option>
+          <option value="黑暗残酷">黑暗残酷</option>
+          <option value="轻松日常">轻松日常</option>
+          <option value="权谋博弈">权谋博弈</option>
+          <option value="热血燃向">热血燃向</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>世界规则（一行一条）</label>
+        <textarea id="world-rules" rows="3" placeholder="修为等级：炼气→筑基→金丹→元婴→化神&#10;灵气浓度影响修炼速度&#10;渡劫失败则魂飞魄散"></textarea>
+      </div>
+      <div class="form-group">
+        <label>关键地点（一行一个）</label>
+        <textarea id="world-locations" rows="2" placeholder="青云宗&#10;魔渊深渊&#10;天机阁&#10;蛮荒古域"></textarea>
+      </div>
+      <div class="form-group">
+        <label>当前局势</label>
+        <textarea id="world-situation" rows="2" placeholder="正道与魔道百年休战将尽，暗流涌动……"></textarea>
+      </div>
+      <div class="form-group">
+        <label>主线目标（选填）</label>
+        <textarea id="world-main-objective" rows="2" placeholder="例：人族在魔朝统治下苟延残喘，主角需在十年内推翻魔朝"></textarea>
+      </div>
+    </div>
+
+    <!-- 角色设定 -->
+    <div id="tab-characters" class="tab-content">
+      <div class="tab-header">
+        <h3>角色设定</h3>
+        <button class="btn-ai-fill" id="btn-ai-chars" onclick="aiFillCharacters()">✦ AI 智能填充</button>
+      </div>
+      <div id="character-list"></div>
+      <button class="btn-secondary" onclick="addCharacter()">+ 添加角色</button>
+    </div>
+  </div>
+</div>
+
+<!-- 游戏主界面 -->
+
+<!-- 时间线页面 -->
+<div id="timeline-page" class="page">
+  <header>
+    <span>故事时间线</span>
+    <div class="header-actions">
+      <button class="btn-small" onclick="backToGame()">返回游戏</button>\n      <button class="btn-secondary" onclick="showBranchPanel()" style="padding:6px 14px;font-size:13px;">副本管理</button>
+    </div>
+  </header>
+
+  <div class="timeline-layout">
+    <!-- 左侧：角色管理 -->
+    <aside class="timeline-sidebar">
+      <div class="timeline-section">
+        <h3>角色列表</h3>
+        <div id="timeline-characters"></div>
+        <button class="btn-small" onclick="showAddCharForm()" style="margin-top:8px;width:100%;">+ 添加角色</button>
+        <button class="btn-small" onclick="scanCharacters()" style="margin-top:4px;width:100%;border-color:#ff9800;color:#ff9800;">扫描正文发现角色</button>
+      </div>
+      <div class="timeline-section" id="tl-add-char-form" style="display:none;">
+        <h3>新角色</h3>
+        <input type="text" id="tl-new-char-name" placeholder="角色名" style="width:100%;margin-bottom:6px;">
+        <input type="text" id="tl-new-char-personality" placeholder="性格" style="width:100%;margin-bottom:6px;">
+        <input type="text" id="tl-new-char-abilities" placeholder="能力（逗号分隔）" style="width:100%;margin-bottom:6px;">
+        <input type="text" id="tl-new-char-weaknesses" placeholder="弱点（逗号分隔）" style="width:100%;margin-bottom:6px;">
+        <input type="text" id="tl-new-char-goal" placeholder="长期目标" style="width:100%;margin-bottom:6px;">
+        <div style="display:flex;gap:6px;">
+          <button class="btn-small" onclick="addNewCharacter()" style="flex:1;">确认</button>
+          <button class="btn-small" onclick="hideAddCharForm()" style="flex:1;">取消</button>
+        </div>
+      </div>
+      <div class="timeline-section">
+        <h3>情节引导</h3>
+        <textarea id="plot-guidance-input" placeholder="输入你希望下一章发生的情节..." style="width:100%;min-height:80px;margin-bottom:6px;"></textarea>
+        <button class="btn-small" onclick="sendPlotGuidance()" style="width:100%;">发送引导</button>
+        <div id="guidance-feedback" style="font-size:12px;color:#888;margin-top:4px;"></div>
+      </div>
+    </aside>
+
+    <!-- 右侧：时间线可视化 -->
+    <main class="timeline-main">
+      <div class="timeline-header">
+        <h2>故事进展</h2>
+        <span id="timeline-chapter-count" style="color:#888;font-size:14px;"></span>
+      </div>
+      <div id="timeline-content" class="timeline-content">
+        <div class="timeline-empty">暂无章节，请先推演章节</div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="game-page" class="page">
+  <header>
+    <span id="game-title">小说世界</span>
+    <span id="game-chapter">第 0 章</span>
+    <span class="model-badge unconfigured" id="game-model-badge" onclick="toggleModelPopover()" title="点击配置 AI 模型">
+      <span class="conn-dot"></span>未配置
+    </span>
+    <div class="header-actions">
+      <button class="btn-small" onclick="saveGame()">保存</button>
+      <button class="btn-small" onclick="loadGame()">加载</button>
+      <button class="btn-small" onclick="showWorldSettingsPanel()">设定</button>
+      <button class="btn-small" onclick="exportNovel()">导出</button>
+      <button class="btn-small" onclick="showOutlinePanel()">大纲</button>
+      <button class="btn-small" onclick="WireframeCanvas.open('plan')">关系图</button>
+      <button class="btn-small" onclick="showProgressPanel()">进度</button>
+      <button class="btn-small" onclick="showTimelinePage()">时间线</button>
+      <button class="btn-small" onclick="backToProjects()" style="margin-left:8px;">项目列表</button>
+    </div>
+  </header>
+
+  <div class="game-layout">
+    <!-- 左侧大纲 -->
+    <aside id="left-panel">
+      <div class="panel-section">
+        <h3>章节列表</h3>
+        <div id="chapter-list"></div>
+      </div>
+      <div class="panel-section">
+        <h3>世界事件</h3>
+        <div id="world-events"></div>
+      </div>
+    </aside>
+
+    <!-- 中间正文 -->
+    <main id="center-panel">
+      <div class="chapter-header">
+        <input type="text" id="chapter-title" placeholder="输入本章标题（可选）">
+        <button class="btn-primary" id="btn-next-chapter" onclick="nextChapter()">
+          天道推演下一章
+        </button>
+      </div>
+      <!-- DM 控制栏 -->
+      <div id="dm-control-bar" class="dm-control-bar">
+        <div class="dm-buttons">
+          <button class="dm-btn dm-start" id="dm-btn-start" onclick="dmStart()">▶ 开始推演</button>
+          <button class="dm-btn dm-pause" id="dm-btn-pause" onclick="dmPause()" disabled>⏸ 暂停</button>
+          <button class="dm-btn dm-resume" id="dm-btn-resume" onclick="dmResume()" disabled>▶ 继续</button>
+          <button class="dm-btn dm-step" id="dm-btn-step" onclick="dmStep()" disabled>⏭ 单步</button>
+          <button class="dm-btn dm-stop" id="dm-btn-stop" onclick="dmStop()" disabled>⏹ 终止</button>
+        </div>
+        <div class="dm-status">
+          <span id="dm-state-label">状态: IDLE</span>
+          <span id="dm-progress">Tick: 0/0 | 章节: 0/0</span>
+          <span id="dm-phase-label" class="dm-phase-label"></span>
+          <div class="chapter-progress-bar" id="chapter-progress-bar" style="display:none;">
+            <div class="chapter-progress-fill" id="chapter-progress-fill"></div>
+            <span class="chapter-progress-label" id="chapter-progress-label"></span>
+          </div>
+        </div>
+      </div>
+      <!-- DM 实时预览：正在生成的正文增量打字机展示 -->
+      <div id="dm-live-preview" class="dm-live-preview" style="display:none;">
+        <div class="dm-live-preview-header">
+          <span>✍ 正文生成中，实时预览…</span>
+          <span id="dm-live-preview-count">已生成 0 字</span>
+        </div>
+        <div class="dm-live-preview-text" id="dm-live-preview-text"></div>
+      </div>
+      <!-- DM 干预面板 -->
+      <div id="dm-intervention-panel" class="dm-intervention-panel" style="display:none;">
+        <div class="interv-header">
+          <span>DM 干预面板</span>
+          <span id="interv-status-msg" style="font-size:12px;font-weight:400;"></span>
+        </div>
+        <div class="interv-tabs">
+          <button class="interv-tab active" data-tab="interv-data">数据干预</button>
+          <button class="interv-tab" data-tab="interv-guidance">天意指引</button>
+          <button class="interv-tab" data-tab="interv-timeline">时间线检查</button>
+          <button class="interv-tab" data-tab="interv-issues" style="border-color:#e74c3c;color:#e74c3c;">质量告警</button>
+          <button class="interv-tab" data-tab="interv-factions">势力管理</button>
+          <button class="interv-tab" data-tab="interv-prompts">Prompt 管理</button>
+          <button class="interv-tab" data-tab="interv-batch">批量编辑</button>
+          <button class="interv-tab" data-tab="interv-postprocess" style="border-color:#9b59b6;color:#9b59b6;">后处理</button>
+          <button class="interv-tab" data-tab="interv-skillpacks" style="border-color:#1abc9c;color:#1abc9c;">技能包</button>
+          <button class="interv-tab" data-tab="interv-model" style="border-color:#f39c12;color:#f39c12;">模型切换</button>
+          <button class="interv-tab" data-tab="interv-outline" style="border-color:#e67e22;color:#e67e22;">大纲管理</button>
+          <button class="interv-tab" data-tab="interv-humanity" style="border-color:#e91e63;color:#e91e63;">人味审</button>
+          <button class="interv-tab" data-tab="interv-wireframe" style="border-color:#3b82f6;color:#3b82f6;">连线框</button>
+        </div>
+        <!-- 数据干预 Tab -->
+        <div class="interv-tab-content active" id="tab-interv-data">
+          <div class="interv-body">
+            <!-- 角色修改 -->
+            <div class="intervention-section">
+              <label>角色修改</label>
+              <div class="intervention-row">
+                <select id="interv-char-select"><option value="">-- 选择角色 --</option></select>
+                <select id="interv-field-select">
+                  <option value="target">目标</option>
+                  <option value="personality">性格</option>
+                  <option value="position">位置</option>
+                  <option value="mood">情绪</option>
+                </select>
+                <input id="interv-value-input" type="text" placeholder="新值" style="flex:1;min-width:120px;">
+                <button class="interv-btn" onclick="dmInjectModify()">应用</button>
+              </div>
+            </div>
+            <!-- 事件注入 -->
+            <div class="intervention-section">
+              <label>注入世界事件</label>
+              <div class="intervention-row">
+                <textarea id="interv-event-desc" placeholder="描述要注入的世界事件（如「天空出现异象，一道金光落在天机阁后山」）"></textarea>
+                <button class="interv-btn" onclick="dmInjectEvent()" style="align-self:flex-end;">注入</button>
+              </div>
+            </div>
+            <!-- 添加目标 -->
+            <div class="intervention-section">
+              <label>为角色添加目标</label>
+              <div class="intervention-row">
+                <select id="interv-goal-char"><option value="">-- 选择角色 --</option></select>
+                <input id="interv-goal-text" type="text" placeholder="目标描述" style="flex:1;min-width:150px;">
+                <button class="interv-btn" onclick="dmInjectGoal()">添加</button>
+              </div>
+            </div>
+            <!-- 干预日志 -->
+            <div class="intervention-section">
+              <label>干预日志</label>
+              <div class="interv-log" id="interv-log">
+                <div class="interv-empty">暂无干预记录</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 天意指引 Tab -->
+        <div class="interv-tab-content" id="tab-interv-guidance">
+          <div class="interv-body">
+            <!-- 角色选择 -->
+            <div class="intervention-section">
+              <label>目标角色</label>
+              <div class="intervention-row">
+                <select id="guidance-char-select"><option value="">-- 选择角色 --</option></select>
+              </div>
+            </div>
+            <!-- 指引内容 -->
+            <div class="intervention-section">
+              <label>指引内容</label>
+              <div class="intervention-row">
+                <textarea id="guidance-message" placeholder="输入你想传达给角色的指引、暗示、警告或预言…" style="min-height:80px;"></textarea>
+              </div>
+            </div>
+            <!-- 融入形式 + 强度 -->
+            <div class="intervention-section">
+              <label>融入形式</label>
+              <div class="intervention-row">
+                <select id="guidance-form">
+                  <option value="auto">自主选择</option>
+                  <option value="dream">梦境</option>
+                  <option value="epiphany">顿悟</option>
+                  <option value="omen">天象</option>
+                  <option value="encounter">偶遇</option>
+                  <option value="inner_voice">内心独白</option>
+                </select>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>指引强度</label>
+              <div class="intervention-row">
+                <select id="guidance-strength">
+                  <option value="hint">暗示</option>
+                  <option value="direct">指引</option>
+                  <option value="vague">模糊预感</option>
+                </select>
+              </div>
+            </div>
+            <!-- 发送 -->
+            <div class="intervention-section">
+              <div class="intervention-row">
+                <button class="interv-btn guidance-send-btn" onclick="dmSendGuidance()">发送天意指引</button>
+              </div>
+            </div>
+            <div class="interv-guidance-msg" id="guidance-msg" style="display:none;"></div>
+          </div>
+        </div>
+        <!-- 时间线检查 Tab -->
+        <div class="interv-tab-content" id="tab-interv-timeline">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshTimelineIssues()" style="flex:1;">刷新</button>
+                <span id="timeline-summary" style="font-size:12px;color:#888;align-self:center;"></span>
+              </div>
+            </div>
+            <!-- 问题列表 -->
+            <div class="intervention-section">
+              <label>检测到的问题</label>
+              <div class="interv-log" id="timeline-issues" style="max-height:250px;">
+                <div class="interv-empty">暂无问题</div>
+              </div>
+            </div>
+            <!-- 未回收伏笔 -->
+            <div class="intervention-section">
+              <label>未回收伏笔</label>
+              <div class="interv-log" id="timeline-clues" style="max-height:200px;">
+                <div class="interv-empty">暂无伏笔</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 质量告警 Tab（DM联动闭环） -->
+        <div class="interv-tab-content" id="tab-interv-issues">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshDmIssues()" style="flex:1;">刷新</button>
+                <span id="dm-issues-summary" style="font-size:12px;color:#888;align-self:center;"></span>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>质量管线反馈</label>
+              <div class="interv-log" id="dm-issues-list" style="max-height:400px;">
+                <div class="interv-empty">暂无质量告警</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 势力管理 Tab（phase2_p1） -->
+        <div class="interv-tab-content" id="tab-interv-factions">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshFactions()" style="flex:1;">刷新势力</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>势力列表</label>
+              <div id="faction-list" style="max-height:300px;overflow-y:auto;">
+                <div class="interv-empty">加载中...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Prompt 管理 Tab（phase2_p2） -->
+        <div class="interv-tab-content" id="tab-interv-prompts">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshPrompts()" style="flex:1;">刷新列表</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>已注册 Prompt</label>
+              <div id="prompt-list" style="max-height:200px;overflow-y:auto;">
+                <div class="interv-empty">加载中...</div>
+              </div>
+            </div>
+            <!-- 编辑区域 -->
+            <div class="intervention-section" id="prompt-editor-section" style="display:none;">
+              <label>编辑 <span id="prompt-editor-name" style="font-weight:bold;"></span></label>
+              <div class="intervention-row">
+                <textarea id="prompt-editor-text" style="min-height:120px;font-family:monospace;font-size:12px;"></textarea>
+              </div>
+              <div class="intervention-row" style="gap:8px;margin-top:6px;">
+                <button class="interv-btn" onclick="savePromptEdit()" style="flex:1;">保存（自动备份旧版本）</button>
+                <button class="interv-btn" onclick="rollbackPrompt()" style="flex:1;">回滚上一版本</button>
+                <button class="interv-btn" onclick="cancelPromptEdit()">取消</button>
+              </div>
+              <div id="prompt-edit-msg" style="font-size:12px;margin-top:4px;color:#4caf50;display:none;"></div>
+            </div>
+            <!-- 版本历史 -->
+            <div class="intervention-section" id="prompt-history-section" style="display:none;">
+              <label>版本历史</label>
+              <div id="prompt-history-list" style="max-height:150px;overflow-y:auto;font-size:12px;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 批量编辑 Tab（phase2_p2） -->
+        <div class="interv-tab-content" id="tab-interv-batch">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <label>批量角色编辑（character_ids: 输入 id 逗号分隔，留空或 all = 全部）</label>
+              <div class="intervention-row" style="gap:6px;">
+                <input id="batch-char-ids" type="text" placeholder="如: char_1,char_3 或 all" style="flex:1;min-width:120px;">
+              </div>
+              <div class="intervention-row" style="gap:6px;margin-top:4px;">
+                <select id="batch-char-field">
+                  <option value="personality">追加性格关键词（逗号分隔）</option>
+                  <option value="faction_id">修改势力归属</option>
+                  <option value="pos">设置位置（x,y）</option>
+                  <option value="goal">修改目标描述</option>
+                </select>
+                <input id="batch-char-value" type="text" placeholder="值" style="flex:2;min-width:100px;">
+                <button class="interv-btn" onclick="batchEditCharacters()">应用</button>
+              </div>
+              <div id="batch-char-msg" style="font-size:12px;margin-top:4px;display:none;"></div>
+            </div>
+            <div class="intervention-section">
+              <label>批量势力编辑</label>
+              <div class="intervention-row" style="gap:6px;">
+                <input id="batch-fac-ids" type="text" placeholder="势力 id（逗号分隔）" style="flex:1;min-width:120px;">
+              </div>
+              <div class="intervention-row" style="gap:6px;margin-top:4px;">
+                <select id="batch-fac-field">
+                  <option value="set_enemies">设置敌对（id 列表逗号分隔）</option>
+                  <option value="set_allies">设置同盟（id 列表逗号分隔）</option>
+                  <option value="add_resources">批量分配资源（逗号分隔）</option>
+                </select>
+                <input id="batch-fac-value" type="text" placeholder="值" style="flex:2;min-width:100px;">
+                <button class="interv-btn" onclick="batchEditFactions()">应用</button>
+              </div>
+              <div id="batch-fac-msg" style="font-size:12px;margin-top:4px;display:none;"></div>
+            </div>
+            <div class="intervention-section">
+              <label>批量导入角色（JSON 数组）</label>
+              <div class="intervention-row">
+                <textarea id="batch-import-json" placeholder='[{"name":"角色名","personality":["勇敢"],"goal":"寻找灵石","faction_id":"f_1","skills":["剑术"]}]' style="min-height:100px;font-family:monospace;font-size:12px;"></textarea>
+              </div>
+              <div class="intervention-row" style="margin-top:6px;">
+                <button class="interv-btn" onclick="batchImportCharacters()" style="flex:1;">导入</button>
+              </div>
+              <div id="batch-import-msg" style="font-size:12px;margin-top:4px;display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 后处理面板 Tab（Phase 1） -->
+        <div class="interv-tab-content" id="tab-interv-postprocess">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <label>后处理规则配置</label>
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshPostProcessRules()" style="flex:1;">刷新规则</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>已启用规则</label>
+              <div id="postprocess-rules-list" style="max-height:300px;overflow-y:auto;">
+                <div class="interv-empty">加载中...</div>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>快速开关</label>
+              <div class="intervention-row" style="gap:8px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
+                  <input type="checkbox" id="pp-remove-ai-tone" checked onchange="togglePPRule('remove_ai_tone')"> 去AI腔
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
+                  <input type="checkbox" id="pp-fix-repetition" checked onchange="togglePPRule('fix_repetition')"> 修复重复
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
+                  <input type="checkbox" id="pp-enhance-vividness" checked onchange="togglePPRule('enhance_vividness')"> 增强生动性
+                </label>
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;">
+                  <input type="checkbox" id="pp-hard-check" onchange="togglePPRule('hard_check')"> 硬校验
+                </label>
+              </div>
+              <div id="pp-rule-msg" style="font-size:12px;margin-top:4px;color:#4caf50;display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 连线框 Tab -->
+        <div class="interv-tab-content" id="tab-interv-wireframe">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="WireframeCanvas.open('plan')" style="flex:1;background:var(--accent);color:#fff;font-weight:bold;">打开连线框画布</button>
+                <button class="interv-btn" onclick="WireframeCanvas.open('compare')" style="flex:1;">对照模式（正文校验）</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>连线框预览</label>
+              <div id="wireframe-mini-preview" style="height:200px;border:1px dashed var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;background:var(--surface);">
+                点击上方按钮打开连线框
+              </div>
+            </div>
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;">
+                <button class="interv-btn" onclick="updateWireframePreview()" style="flex:1;">刷新预览</button>
+              </div>
+            </div>
+            <div id="wf-mini-msg" style="font-size:12px;margin-top:4px;color:#4caf50;display:none;"></div>
+          </div>
+        </div>
+
+        <!-- 技能包管理 Tab（Phase 1） -->
+        <div class="interv-tab-content" id="tab-interv-skillpacks">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshSkillPacks()" style="flex:1;">刷新</button>
+                <button class="interv-btn" onclick="importSkillPack()" style="flex:1;">导入技能包</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>已安装技能包</label>
+              <div id="skillpack-list" style="max-height:300px;overflow-y:auto;">
+                <div class="interv-empty">加载中...</div>
+              </div>
+            </div>
+            <div id="skillpack-msg" style="font-size:12px;margin-top:4px;display:none;"></div>
+          </div>
+        </div>
+
+        <!-- 模型切换 Tab（多 Provider 架构） -->
+        <div class="interv-tab-content" id="tab-interv-model">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <label>模型管理</label>
+              <div class="intervention-row" style="gap:6px;">
+                <button class="interv-btn" onclick="toggleModelPopover()" style="flex:1;">打开模型配置弹窗</button>
+              </div>
+            </div>
+            <div id="model-msg" style="font-size:12px;margin-top:4px;display:none;"></div>
+          </div>
+        </div>
+
+        <!-- 大纲管理 Tab（Phase 2） -->
+        <div class="interv-tab-content" id="tab-interv-outline">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="refreshOutline()" style="flex:1;">刷新大纲</button>
+                <button class="interv-btn" onclick="generateOutline()" style="flex:1;">AI 生成大纲</button>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>大纲结构</label>
+              <div id="outline-tree" style="max-height:350px;overflow-y:auto;">
+                <div class="interv-empty">加载中...</div>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>大纲编辑</label>
+              <div class="intervention-row">
+                <textarea id="outline-editor-text" placeholder="编辑大纲（Markdown 格式）..." style="min-height:120px;font-family:monospace;font-size:12px;"></textarea>
+              </div>
+              <div class="intervention-row" style="gap:8px;margin-top:6px;">
+                <button class="interv-btn" onclick="saveOutline()" style="flex:1;">保存</button>
+                <button class="interv-btn" onclick="exportOutline()">导出</button>
+              </div>
+              <div id="outline-msg" style="font-size:12px;margin-top:4px;color:#4caf50;display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 人味审 Tab（Phase 3） -->
+        <div class="interv-tab-content" id="tab-interv-humanity">
+          <div class="interv-body">
+            <div class="intervention-section">
+              <label>人味审核</label>
+              <div class="intervention-row" style="gap:8px;margin-bottom:8px;">
+                <button class="interv-btn" onclick="runHumanityAudit()" style="flex:1;">审核当前章节</button>
+                <span style="font-size:12px;color:#888;align-self:center;">阈值: 0.55</span>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>六维度评分</label>
+              <div id="humanity-scores" style="max-height:200px;overflow-y:auto;">
+                <div class="interv-empty">点击审核按钮开始</div>
+              </div>
+            </div>
+            <div class="intervention-section">
+              <label>审核报告</label>
+              <div id="humanity-report" class="interv-log" style="max-height:250px;">
+                <div class="interv-empty">暂无报告</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="chapter-content">
+        <p class="placeholder">设定好世界和角色后，点击「天道推演下一章」开始生成……</p>
+      </div>
+    </main>
+
+    <!-- 右侧面板 -->
+<aside id="right-panel">
+      <div class="panel-section">
+        <h3>角色状态 <button onclick="toggleAddCharForm()" style="float:right;font-size:11px;padding:2px 8px;border:1px dashed var(--border);border-radius:4px;background:var(--surface);color:var(--accent);cursor:pointer">+ 添加角色</button></h3>
+        <button onclick="scanCharacters()" style="font-size:11px;padding:3px 8px;border:1px solid #ff9800;border-radius:4px;background:var(--surface);color:#ff9800;cursor:pointer;margin-top:4px;width:100%;">扫描正文发现角色</button>
+<div id="character-status"></div>
+      </div>
+      <!-- 添加角色表单 -->
+      <div id="add-char-form" style="display:none;border:1px solid var(--border);border-radius:6px;padding:10px;margin-top:8px;">
+        <h4 style="margin-bottom:8px;font-size:13px;">新角色</h4>
+        <input id="new-char-name" type="text" placeholder="角色名" style="width:100%;margin-bottom:6px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;">
+        <div style="display:flex;gap:6px;margin-bottom:6px;">
+          <input id="new-char-age" type="number" placeholder="年龄" value="20" style="width:60px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;">
+          <select id="new-char-gender" style="flex:1;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;"><option value="男">男</option><option value="女">女</option></select>
+        </div>
+        <input id="new-char-personality" type="text" placeholder="性格（如：冷静、果断）" style="width:100%;margin-bottom:6px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;">
+        <input id="new-char-goal" type="text" placeholder="长期目标" style="width:100%;margin-bottom:6px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;">
+        <input id="new-char-location" type="text" placeholder="初始位置（可选）" style="width:100%;margin-bottom:6px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;">
+        <textarea id="new-char-bg" placeholder="背景简介（可选）" style="width:100%;min-height:40px;margin-bottom:8px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;resize:vertical;"></textarea>
+        <div style="display:flex;gap:6px;">
+          <button onclick="submitAddChar()" class="btn-primary" style="flex:1;padding:6px;font-size:12px;">确认添加</button>
+          <button onclick="toggleAddCharForm()" style="flex:1;padding:6px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--muted);cursor:pointer;">取消</button>
+        </div>
+        <div id="add-char-msg" style="font-size:11px;margin-top:4px;color:#4caf50;display:none;"></div>
+      </div>
+      <!-- 情节引导面板 -->
+      <div style="border:1px solid var(--border);border-radius:6px;padding:10px;margin-top:8px;">
+        <h4 style="margin-bottom:8px;font-size:13px;">情节引导</h4>
+        <div style="margin-bottom:8px;">
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">注入事件（影响下一章）</label>
+          <textarea id="guide-event-desc" placeholder="如：一名神秘老者出现在城门口..." style="width:100%;min-height:36px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:12px;resize:vertical;"></textarea>
+          <button onclick="guidePlotEvent()" style="margin-top:4px;padding:4px 12px;font-size:11px;border:1px solid var(--accent);border-radius:4px;background:var(--surface);color:var(--accent);cursor:pointer;">注入事件</button>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">为角色添加目标</label>
+          <div style="display:flex;gap:4px;">
+            <select id="guide-goal-char" style="flex:1;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:11px;"><option value="">角色</option></select>
+            <input id="guide-goal-text" type="text" placeholder="新目标" style="flex:2;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);font-size:11px;">
+          </div>
+          <button onclick="guideAddGoal()" style="margin-top:4px;padding:4px 12px;font-size:11px;border:1px solid var(--accent);border-radius:4px;background:var(--surface);color:var(--accent);cursor:pointer;">添加目标</button>
+        </div>
+        <div id="guide-msg" style="font-size:11px;margin-top:4px;color:#4caf50;display:none;"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- 聊天面板 overlay -->
+  <div id="chat-overlay">
+    <div id="chat-header">剧情讨论 <button id="chat-close">&times;</button></div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+      <textarea id="chat-input" rows="2" placeholder="讨论剧情，或直接说「加一个角色...」"></textarea>
+      <button id="chat-send">发送</button>
+    </div>
+  </div>
+
+  <!-- 聊天浮动按钮 -->
+  <button id="chat-toggle">💬</button>
+</div>
+
+<script src="wireframe-canvas.js?v=20260810h"></script>
+<script src="toast.js?v=20260810d"></script>
+<script src="setup.js?v=20260810d"></script>
+<script src="game.js?v=20260810i"></script>
+<script src="dm.js?v=20260810d"></script>
+<script src="features.js?v=20260810e"></script>
+<script src="timeline.js?v=20260810d"></script>
+<script src="chat.js?v=20260810e"></script>
+<script src="js/model_config.js?v=20260810c"></script>
+<!-- ═══════════════════════════════════════════ 连线框全屏画布 Overlay ═══════════════════════════════════════════ -->
+<div id="wf-overlay" class="wf-overlay" style="display:none;">
+  <!-- 工具栏 -->
+  <div class="wf-toolbar" id="wf-toolbar">
+    <div class="wf-toolbar-left">
+      <button data-wf-action="new" title="新建节点">+节点</button>
+      <button data-wf-action="connect" id="wf-connect-btn" title="连线模式">连线</button>
+      <button data-wf-action="undo" title="撤销">↩</button>
+      <button data-wf-action="redo" title="重做">↪</button>
+      <span class="wf-sep"></span>
+      <button data-wf-action="zoom-in" title="放大">+</button>
+      <button data-wf-action="zoom-out" title="缩小">-</button>
+      <button data-wf-action="zoom-reset" title="重置缩放">1:1</button>
+      <span class="wf-sep"></span>
+      <button data-wf-action="auto-gen" title="从项目数据自动生成">自动生成</button>
+      <button data-wf-action="export" title="导出SVG">导出</button>
+    </div>
+    <div class="wf-toolbar-center">
+      <span id="wf-status">节点:0 | 连线:0 | 未保存</span>
+      <span class="wf-check-badge" id="wf-check-badge" style="display:none;">0</span>
+    </div>
+    <div class="wf-toolbar-right">
+      <button data-wf-action="toggle-compare" title="对照模式">对照</button>
+      <button data-wf-action="check" title="全局一致性检测">检测</button>
+      <button data-wf-action="close" title="关闭">关闭</button>
+    </div>
+  </div>
+
+  <!-- 画布主体 -->
+  <div class="wf-main">
+    <!-- 素材库 -->
+    <div class="wf-sidebar" id="wf-sidebar">
+      <h3>素材库</h3>
+      <div id="wf-asset-lib" class="wf-asset-lib"></div>
+    </div>
+
+    <!-- 画布区 -->
+    <div class="wf-canvas-wrap">
+      <svg id="wf-svg" class="wf-svg">
+        <g id="wf-canvas-group"></g>
+      </svg>
+      <!-- 右键菜单 -->
+      <div id="wf-context-menu" class="wf-context-menu" style="display:none;"></div>
+    </div>
+
+    <!-- 对照面板 -->
+    <div class="wf-compare-panel" id="wf-compare-panel" style="display:none;">
+      <div id="wf-compare-content" class="wf-compare-content"></div>
+    </div>
+  </div>
+
+  <!-- 节点编辑器 -->
+  <div id="wf-node-editor" class="wf-node-editor" style="display:none;">
+    <div class="wf-edit-header">节点编辑</div>
+    <div class="wf-edit-body">
+      <label>类型</label>
+      <select id="wf-edit-type">
+        <option value="character">人物</option>
+        <option value="foreshadow">伏笔</option>
+        <option value="chapter">章节</option>
+        <option value="worldview">世界观</option>
+        <option value="free">自由</option>
+      </select>
+      <label>标题</label>
+      <input type="text" id="wf-edit-title" placeholder="节点标题" />
+      <label>摘要</label>
+      <textarea id="wf-edit-summary" rows="3" placeholder="简要描述"></textarea>
+      <label>关键引用</label>
+      <textarea id="wf-edit-quotes" rows="2" placeholder="正文中的关键引用"></textarea>
+      <label>章节引用</label>
+      <input type="text" id="wf-edit-ref" placeholder="如：第1章" />
+    </div>
+    <div class="wf-edit-footer">
+      <button data-wf-action="save-edit">保存</button>
+      <button data-wf-action="cancel-edit">取消</button>
+    </div>
+  </div>
+
+  <!-- 教学弹窗 -->
+  <div id="wf-tutorial" class="wf-tutorial" style="display:none;">
+    <div class="wf-tut-card">
+      <h3>连线框画布</h3>
+      <ul>
+        <li>拖拽节点调整布局</li>
+        <li>双击节点/空白处编辑</li>
+        <li>拖拽素材到画布添加节点</li>
+        <li>先点连线按钮，再点两个节点连接</li>
+        <li>Ctrl+Z 撤销 / Ctrl+Shift+Z 重做</li>
+        <li>滚轮缩放、Shift拖拽框选</li>
+        <li>右键节点/画布查看更多操作</li>
+      </ul>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <label><input type="checkbox" id="wf-tut-noshow" /> 不再显示</label>
+        <button id="wf-tut-close" style="margin-left:auto;">开始使用</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Model Config Popover -->
+<div class="model-popover" id="model-popover">
+  <div class="mp-sec">
+    <h4>AI 服务商</h4>
+    <div class="mp-tabs" id="mp-tabs">
+      <button class="mp-tab active" data-provider="deepseek" onclick="switchModelProvider('deepseek')">DeepSeek V4</button>
+      <button class="mp-tab" data-provider="ollama" onclick="switchModelProvider('ollama')">Ollama</button>
+      <button class="mp-tab" data-provider="openai" onclick="switchModelProvider('openai')">OpenAI</button>
+    </div>
+    <div id="mp-deepseek-panel">
+      <input class="mp-select" id="mp-api-key" type="password" placeholder="API 密钥 (sk-...)" onchange="saveModelConfig()">
+      <input class="mp-select" id="mp-endpoint" value="https://api.deepseek.com" placeholder="接口地址" onchange="saveModelConfig()">
+      <select class="mp-select" id="mp-model-name" onchange="saveModelConfig()">
+        <option value="deepseek-v4-flash">DeepSeek V4 Flash（快速）</option>
+        <option value="deepseek-v4">DeepSeek V4（深度推理）</option>
+      </select>
+    </div>
+    <div style="display:none" id="mp-ollama-panel">
+      <input class="mp-select" id="mp-ollama-host" value="http://localhost:11434" placeholder="Ollama 主机地址" onchange="saveModelConfig()">
+      <input class="mp-select" id="mp-ollama-model" value="qwen2.5:14b" placeholder="模型名称（如 qwen2.5:14b）" onchange="saveModelConfig()">
+    </div>
+    <div style="display:none" id="mp-openai-panel">
+      <input class="mp-select" id="mp-openai-key" type="password" placeholder="API 密钥 (sk-...)" onchange="saveModelConfig()">
+      <input class="mp-select" id="mp-openai-endpoint" value="https://api.openai.com/v1" placeholder="接口地址" onchange="saveModelConfig()">
+      <input class="mp-select" id="mp-openai-model" value="gpt-4o-mini" placeholder="模型名称" onchange="saveModelConfig()">
+    </div>
+    <div class="mp-row"><label>创意温度</label><input type="range" min="0" max="2" step="0.1" value="0.7" id="mp-temp" oninput="document.getElementById('mp-temp-val').textContent=this.value;saveModelConfig()"><span class="mp-val" id="mp-temp-val">0.7</span></div>
+    <div class="mp-row"><label>最大字数</label><input type="number" min="500" max="10000" step="500" value="4096" id="mp-maxwords" onchange="saveModelConfig()"></div>
+    <button class="btn-save" id="mp-test-conn" style="width:100%;margin-top:8px" onclick="testConnection()">测试连接</button>
+    <div id="mp-conn-status"></div>
+  </div>
+  <div class="mp-sec" id="mp-usage-sec" style="border-top:1px solid var(--border);padding-top:8px">
+    <h4 style="display:flex;justify-content:space-between;align-items:center">用量统计 <button class="btn-sm" onclick="loadAIUsage(true)" style="font-size:11px;padding:2px 8px;cursor:pointer">刷新</button></h4>
+    <div id="mp-usage-body" style="font-size:12px;color:var(--ink)"><span style="opacity:0.5">点击刷新加载…</span></div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+# =============================================================================
+# 碰撞引擎权重配置模板
+# =============================================================================
+# 复制此文件为 weights.yaml 并根据实际运行数据进行调优。
+# 本文件不含实际调优值，仅作为模板参考。
+# =============================================================================
+
+weights:
+  # —— 目标对冲 ——
+  goal_keyword_opposition: 50
+  goal_character_bidirectional: 100
+  goal_character_unidirectional: 80
+
+  # —— 势力冲突 ——
+  faction_direct_conflict: 50
+  faction_enemy_conflict: 70
+  faction_territory_conflict: 75
+  faction_resource_conflict: 75
+  faction_full_confrontation: 90
+  faction_target_conflict: 65
+
+  # —— 资源争夺 ——
+  resource_contention: 60
+
+  # —— 默认权重 ——
+  perception_default: 0
+  capability_default: 0
+  proximity_default: 0
+
+thresholds:
+  proximity: 3
+  combat_stalemate: 1.5
+  combat_crush: 2.5
+  capability_diff_threshold: 0
+
+constraints:
+  min_weight: 0
+  max_weight: 100

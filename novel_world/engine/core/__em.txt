@@ -1,0 +1,24 @@
+
+=== Engine L26-745 ===
+  L  29-L 154 (126L)  __init__                             
+  L 156-L 168 ( 13L)  _on_model_preloaded                  模型预加载完成回调 - 生成故事开头
+  L 170-L 210 ( 41L)  _generate_story_intro                生成故事开头（基于主题和世界描述）
+  L 212-L 314 (103L)  _create_characters                   创建角色
+  L 316-L 367 ( 52L)  _create_default_factions             创建默认势力
+  L 369-L 462 ( 94L)  tick                                 一次推演
+  L 464-L 505 ( 42L)  _process_character_dialogues         
+  L 507-L 518 ( 12L)  _ai_narrative_worker                 后台AI叙事生成（不阻塞主线程）
+  L 520-L 535 ( 16L)  _move_characters                     角色移动：优先目标导向（向资源所在地移动），否则随机移动
+  L 537-L 546 ( 10L)  _extract_resource_keywords           从目标文本中提取资源关键词。
+  L 548-L 577 ( 30L)  _resolve_goal_to_location            解析角色目标中的资源关键词，查询资源所在地，向该方向移动。
+  L 579-L 581 (  3L)  _random_move_characters              角色随机小范围移动（向后兼容）
+  L 583-L 644 ( 62L)  _update_states_from_narrative        根据叙述大致更新角色状态（轻量）
+  L 647-L 660 ( 14L)  _update_faction_territory            更新势力领地
+  L 662-L 665 (  4L)  _clamp_pos                           
+  L 667-L 673 (  7L)  save                                 保存游戏状态
+  L 675-L 676 (  2L)  set_speed                            
+  L 678-L 680 (  3L)  get_tick_interval_ms                 
+  L 682-L 684 (  3L)  toggle_pause                         
+  L 686-L 687 (  2L)  save_game                            
+  L 689-L 690 (  2L)  load_game                            
+  L 692-L 745 ( 54L)  export_story                         导出故事，novel_mode=True 时输出小说风格纯文本

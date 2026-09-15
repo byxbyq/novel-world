@@ -1,0 +1,48 @@
+# ==========================================================================
+# 小说世界 - 初始人际关系配置
+# 移植自 run_demo.py 硬编码的第 ~170 行，转为 YAML 可配置格式。
+#
+# 关系类型 (relation_type)：
+#   close     - 亲近/信任
+#   hostile   - 敌对/仇视
+#   distant   - 疏远/冷淡
+#   allied    - 同盟/合作
+#   distrust  - 猜忌/不信任
+# ==========================================================================
+
+relations:
+  - subject: 李青云
+    object: 苏晚
+    relation: close
+    subject_feeling: 亲近
+    object_feeling: 信任
+
+  - subject: 李青云
+    object: 魔尊玄冥
+    relation: hostile
+    subject_feeling: 敌对
+    object_feeling: 敌视
+
+  - subject: 李青云
+    object: 楚白
+    relation: distant
+    subject_feeling: 疏远
+    object_feeling: 亲近（对旧友心存愧疚）
+
+  - subject: 李青云
+    object: 天玑子
+    relation: close
+    subject_feeling: 信任
+    object_feeling: 期盼
+
+  - subject: 宁紫嫣
+    object: 魔尊玄冥
+    relation: close
+    subject_feeling: 绝对忠诚
+    object_feeling: 亲近
+
+  - subject: 魔尊玄冥
+    object: 天玑子
+    relation: hostile
+    subject_feeling: 忌惮
+    object_feeling: 提防

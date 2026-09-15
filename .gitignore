@@ -1,0 +1,45 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+node_modules/
+saves/
+*.log
+.DS_Store
+Thumbs.db
+temp/
+*.swo
+*.swp
+
+# IDE 工具生成目录
+.qoder/
+
+# 临时/修复脚本
+_fix*.py
+_patch*.py
+temp_output.txt
+test_final.txt
+start_2026*.bat
+output/
+
+# FictionForge 适配
+ai_usage.json
+backend/data/ai_config.json
+backend/data/skills/
+data/ai_config.json
+
+# 碰撞权重新标定（运行时调优产物，使用 weights.example.yaml 作为模板）
+novel_world/engine/collision/weights.yaml
+
+# 素材原文（不随开源发布）
+修仙大世界.txt
+
+# 旧 git 历史备份目录（开源重建时保留的 .git_old_backup*）
+.git_old_backup*/
+

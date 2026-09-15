@@ -50,10 +50,34 @@ if not exist .env (
     echo Notepad closed, continuing...
 )
 
-:: Launch
+:: Launch server in a separate window
 echo.
-echo Starting server... Opening http://127.0.0.1:5000
-echo Close this window to stop the server.
+echo Starting server...
+set USE_WAITRESS=1
+start "Novel World Server" ".venv\Scripts\python.exe" run_game.py
+
+:: Wait until backend is ready (poll /api/health, up to 60 seconds)
+set "HEALTH_URL=http://127.0.0.1:5000/api/health"
+set /a tries=0
+:wait_health
+set /a tries+=1
+if %tries% gtr 60 (
+    echo.
+    echo [ERROR] Server did not become ready within 60 seconds.
+    echo         Please check the "Novel World Server" window for errors
+    echo         (e.g. port 5000 occupied, missing dependencies, .env issues).
+    pause
+    exit /b 1
+)
+powershell -NoProfile -Command "try { $r = Invoke-WebRequest -Uri '%HEALTH_URL%' -UseBasicParsing -TimeoutSec 2; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }"
+if errorlevel 1 (
+    timeout /t 1 /nobreak >nul
+    goto wait_health
+)
+
+:: Backend ready -> open browser once
+echo.
+echo Server is ready. Opening http://127.0.0.1:5000
+echo Close the "Novel World Server" window to stop the server.
 start http://127.0.0.1:5000
-python run_game.py
 pause

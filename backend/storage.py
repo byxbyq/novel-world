@@ -25,7 +25,8 @@ from novel_world.engine.core.goal import GoalStatus
 
 logger = logging.getLogger(__name__)
 
-SAVES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "saves")
+_WRITABLE_BASE = os.environ.get("NOVEL_WORLD_WRITABLE") or os.path.dirname(os.path.dirname(__file__))
+SAVES_DIR = os.path.join(_WRITABLE_BASE, "saves")
 
 # 合法槽位名：字母/数字/下划线/连字符/中文，1-64 字符
 _SLOT_PATTERN = re.compile(r"^[\w\u4e00-\u9fa5-]{1,64}$")

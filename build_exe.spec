@@ -7,20 +7,29 @@
 import os
 import sys
 
-PROJECT_DIR = r"H:\小说\小说世界"
+PROJECT_DIR = r"H:\素材资源\小说\新建文件夹\小说世界(单边终局)"
 
 # ── 数据目录（递归收集） ──
 _data_dirs = []
 for dirname in ["frontend", "api", "backend", "novel_world", "utils",
-                "saves", "output", "data",
-                "docs", "examples", "temp"]:
+                "docs", "examples"]:
     src = os.path.join(PROJECT_DIR, dirname)
     if os.path.isdir(src):
-        _data_dirs.append((src, dirname))
+        if dirname == "backend":
+            # backend 含运行时数据子目录 data（ai_config.json/ai_usage.json），必须排除
+            # 逐文件收集，跳过 data 与 __pycache__，保持相对路径
+            for root2, dirs2, files2 in os.walk(src):
+                dirs2[:] = [d for d in dirs2 if d not in ("data", "__pycache__")]
+                for fn in files2:
+                    full = os.path.join(root2, fn)
+                    rel = os.path.relpath(full, PROJECT_DIR)
+                    _data_dirs.append((full, os.path.dirname(rel).replace("\\", "/")))
+        else:
+            _data_dirs.append((src, dirname))
 
 # ── 单独数据文件 ──
 _data_files = []
-for fname in [".env", ".env.example", "requirements.txt",
+for fname in ["VERSION", ".env.example", "requirements.txt",
               "characters.yaml", "factions.yaml", "map.yaml", "plot.yaml", "relationships.yaml"]:
     src = os.path.join(PROJECT_DIR, fname)
     if os.path.isfile(src):

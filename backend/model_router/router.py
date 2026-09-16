@@ -16,6 +16,7 @@ API Key 读取优先级（每个 provider 独立）：
 """
 import json
 import os
+import sys
 import time
 import logging
 import httpx
@@ -37,10 +38,15 @@ class ModelRouter:
 
     def __init__(self, config_path: str = None):
         if config_path is None:
-            config_path = os.path.join(
-                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                "data", "ai_config.json"
-            )
+            if getattr(sys, "frozen", False):
+                # PyInstaller 打包态：配置写 exe 同目录 data/（绿色便携）
+                base = os.environ.get("NOVEL_WORLD_WRITABLE", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                config_path = os.path.join(base, "data", "ai_config.json")
+            else:
+                config_path = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                    "data", "ai_config.json"
+                )
         self.config_path = config_path
         self.config = self._load_config()
         self._ensure_defaults()

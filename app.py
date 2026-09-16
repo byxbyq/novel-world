@@ -15,6 +15,12 @@ from dotenv import load_dotenv, set_key
 # PyInstaller 兼容：打包后资源在 sys._MEIPASS
 BASE_DIR = getattr(sys, "_MEIPASS", os.path.dirname(__file__))
 
+# PyInstaller 打包态：_MEIPASS 为只读解压区，可写数据(.env/saves/output)重定向到 exe 同目录
+FROZEN = bool(getattr(sys, "frozen", False))
+WRITABLE_BASE = os.path.dirname(sys.executable) if FROZEN else os.path.dirname(__file__)
+if FROZEN:
+    os.environ["NOVEL_WORLD_WRITABLE"] = WRITABLE_BASE
+
 
 # ── 应用版本号（VERSION 文件 > git tag > dev）──
 def _resolve_app_version() -> str:
@@ -82,10 +88,8 @@ def _masked_log_record_factory(*args, **kwargs):
 
 logging.setLogRecordFactory(_masked_log_record_factory)
 
-# 加载 .env
-ENV_PATH = os.path.join(BASE_DIR, ".env")
-if not os.path.exists(ENV_PATH):
-    ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
+# 加载 .env（打包态读 exe 同目录，避免写入只读解压区）
+ENV_PATH = os.path.join(WRITABLE_BASE, ".env")
 load_dotenv(ENV_PATH, override=True)
 
 sys.path.insert(0, BASE_DIR)
@@ -245,7 +249,7 @@ def api_health():
 
     dirs = {}
     for d in ("saves", "data"):
-        path = os.path.join(os.path.dirname(__file__), d)
+        path = os.path.join(WRITABLE_BASE, d)
         dirs[d] = os.path.isdir(path) and os.access(path, os.W_OK)
 
     failed_modules = [m for m in _api_load_report if not m["ok"]]
@@ -268,7 +272,7 @@ def api_health():
 # 连线框 API（从书斋V66移植）
 # ═══════════════════════════════════════════
 
-SAVES_DIR = os.path.join(os.path.dirname(__file__), "saves")
+SAVES_DIR = os.path.join(WRITABLE_BASE, "saves")
 PLANNING_CARDS_FILE = os.path.join(SAVES_DIR, "planning_cards.json")
 
 @app.route("/api/project/planning-cards", methods=["GET"])

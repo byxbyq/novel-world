@@ -26,7 +26,8 @@ from utils.vector_memory import VectorMemory, MemoryType
 logger = logging.getLogger(__name__)
 
 # 游戏世界记忆存储目录
-_SAVES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "saves")
+_WRITABLE_BASE = os.environ.get("NOVEL_WORLD_WRITABLE") or os.path.dirname(os.path.dirname(__file__))
+_SAVES_DIR = os.path.join(_WRITABLE_BASE, "saves")
 
 
 class MemoryManager:

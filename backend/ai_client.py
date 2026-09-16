@@ -41,8 +41,8 @@ class AIClient:
     def __init__(self, config_path: str = None):
         if config_path is None:
             if getattr(sys, "frozen", False):
-                # PyInstaller 打包后写入用户目录
-                data_dir = os.path.join(os.path.expanduser("~"), ".novel_world", "data")
+                # PyInstaller 打包后写入 exe 同目录（绿色便携）
+                data_dir = os.path.join(os.environ.get("NOVEL_WORLD_WRITABLE", os.path.dirname(__file__)), "data")
                 config_path = os.path.join(data_dir, "ai_config.json")
             else:
                 config_path = os.path.join(os.path.dirname(__file__), "..", "data", "ai_config.json")

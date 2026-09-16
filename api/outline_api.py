@@ -592,7 +592,7 @@ def api_save_outline():
     """保存手动编辑的大纲 Markdown"""
     data = request.get_json() or {}
     raw_md = data.get("outline_markdown", "")
-    save_dir = os.path.join(os.path.dirname(FRONTEND_DIR), "saves")
+    save_dir = os.path.join(os.environ.get("NOVEL_WORLD_WRITABLE") or os.path.dirname(FRONTEND_DIR), "saves")
     os.makedirs(save_dir, exist_ok=True)
     save_path = os.path.join(save_dir, "outline_edited.md")
     with open(save_path, "w", encoding="utf-8") as f:

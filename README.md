@@ -43,6 +43,18 @@ tests/          # 自动化测试
 docs/           # 设计文档与变更清单
 ```
 
+## Windows 免安装版（EXE）
+
+不想配置 Python 环境？可直接下载 Windows 免安装版：
+
+- **下载**：GitHub Releases 页面下载 `小说世界.exe`（约 18 MB，Windows 10/11 x64）
+- **运行**：双击即可启动，无需安装 Python、无需安装任何依赖
+- **数据目录**：`.env`、`saves/`、`data/`、`output/`、`temp/` 会自动创建在 **EXE 同目录**下，便于备份与整体迁移
+- **模型配置**：首次运行时在界面填入任意 OpenAI 兼容 API Key（DeepSeek / OpenAI / Ollama / 豆包 / Kimi 均可）；或使用演示模式（`provider="none"`）不填 Key 直接体验完整流程
+- **端口**：默认监听 `http://127.0.0.1:5000`；若端口被占用，启动前设置环境变量 `PORT` 即可改用其他端口（如 `set PORT=5010`）
+
+> 提示：EXE 与源码保持同版本（0.9.1），存档与数据格式和源码版完全兼容，可互相迁移。
+
 ## 快速开始
 
 环境要求：Windows / Linux / macOS，Python 3.11+。

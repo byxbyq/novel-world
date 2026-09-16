@@ -79,5 +79,17 @@ if errorlevel 1 (
 echo.
 echo Server is ready. Opening http://127.0.0.1:5000
 echo Close the "Novel World Server" window to stop the server.
-start http://127.0.0.1:5000
+:: Open browser explicitly: prefer Edge/Chrome executable paths, fallback to default browser
+set "URL=http://127.0.0.1:5000"
+set "BROWSER="
+if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" set "BROWSER=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
+if not defined BROWSER if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" set "BROWSER=%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"
+if not defined BROWSER if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set "BROWSER=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+if not defined BROWSER if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set "BROWSER=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
+if defined BROWSER goto :open_explicit
+start "" "%URL%"
+goto :browser_done
+:open_explicit
+start "" "%BROWSER%" "%URL%"
+:browser_done
 pause

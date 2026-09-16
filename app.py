@@ -102,7 +102,7 @@ from backend.ai_client import init_client, _client, get_client, get_available_pr
 # Phase 1-3 移植的 backend 模块
 from backend.post_processor import apply_de_ai_postprocess, detect_ai_flavor, compute_ai_score, sanitize_user_input
 from backend.model_router import ModelRouter
-from backend.skill_packs import SkillPackManager
+from backend.skill_packs import SkillPackManager, novel_distill
 from backend.distilled_memory import DistillService, MemorySynthesizer, VectorMemory
 from backend.humanity_audit import verve_review, render_humanity_report
 from backend.dual_pipeline import DualPipeline
@@ -206,6 +206,7 @@ _api_ns = {
     # Phase 1-3 移植模块
     "model_router": model_router,
     "skill_manager": skill_manager,
+    "novel_distill": novel_distill,
     "distill_service": distill_service,
     "verve_review_svc": verve_review_svc,
     "render_humanity_report": render_humanity_report,

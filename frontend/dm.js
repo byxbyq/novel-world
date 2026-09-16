@@ -1085,15 +1085,17 @@ async function refreshSkillPacks() {
   try {
     const res = await fetch("/api/skill-packs/list");
     const data = await res.json();
-    if (data.packs && data.packs.length) {
-      listEl.innerHTML = data.packs.map(p => `
+    const packs = data.skills || data.packs || [];
+    if (packs.length) {
+      listEl.innerHTML = packs.map(p => `
         <div class="interv-log-line" style="display:flex;justify-content:space-between;align-items:center;">
           <div>
-            <strong>${p.name}</strong>
-            <span style="font-size:11px;color:#888;margin-left:8px;">v${p.version || "1.0"}</span>
+            <strong>${p.name || p.id || "未命名"}</strong>
+            <span style="font-size:11px;color:#888;margin-left:8px;">${p.type || ""}</span>
           </div>
-          <span style="font-size:11px;color:#888;">${p.active ? "激活" : "闲置"}</span>
-        </div>`).join("");
+          <span style="font-size:11px;color:#888;">${(p.updated_at || p.created_at || "").slice(0, 10)}</span>
+        </div>
+        <div style="font-size:11px;color:#666;margin:2px 0 6px 0;">${p.description || ""}</div>`).join("");
     } else {
       listEl.innerHTML = '<div class="interv-empty">暂无技能包</div>';
     }
@@ -1104,13 +1106,40 @@ async function refreshSkillPacks() {
 
 function importSkillPack() {
   const msgEl = document.getElementById("skillpack-msg");
-  // 触发技能包导入（具体逻辑由后端 skill_packs 路由实现）
-  fetch("/api/skill-packs/import", { method: "POST" })
+  const inputEl = document.getElementById("skillpack-input");
+  const raw = (inputEl ? inputEl.value : "").trim();
+  if (!raw) {
+    msgEl.textContent = "请先在上方粘贴技能包 JSON 或小说文本";
+    msgEl.style.color = "#f44336";
+    msgEl.style.display = "block";
+    return;
+  }
+
+  let body;
+  try {
+    const parsed = JSON.parse(raw);
+    body = parsed;
+  } catch (e) {
+    body = { novel_text: raw };
+  }
+
+  fetch("/api/skill-packs/import", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  })
     .then(r => r.json())
     .then(data => {
+      if (data.error) {
+        msgEl.textContent = "导入失败: " + data.error;
+        msgEl.style.color = "#f44336";
+        msgEl.style.display = "block";
+        return;
+      }
       msgEl.textContent = data.message || "导入完成";
       msgEl.style.color = "#4caf50";
       msgEl.style.display = "block";
+      if (inputEl) inputEl.value = "";
       refreshSkillPacks();
     })
     .catch(e => {
@@ -1276,10 +1305,27 @@ async function runHumanityAudit() {
   reportEl.innerHTML = '<div class="interv-empty">等待结果...</div>';
 
   try {
+    // 取当前（最新）章节正文作为审核内容
+    const chRes = await fetch("/api/chapters");
+    const chData = await chRes.json();
+    const chapters = (chData && chData.chapters) || [];
+    if (!chapters.length) {
+      scoresEl.innerHTML = '<div class="interv-empty">暂无可审核章节，请先生成章节</div>';
+      reportEl.innerHTML = '<div class="interv-empty">-</div>';
+      return;
+    }
+    const latest = chapters[chapters.length - 1];
+    const content = (latest && latest.narrative) || "";
+    if (!content) {
+      scoresEl.innerHTML = '<div class="interv-empty">最新章节正文为空，无法审核</div>';
+      reportEl.innerHTML = '<div class="interv-empty">-</div>';
+      return;
+    }
+
     const res = await fetch("/api/humanity/audit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chapter: "current" })
+      body: JSON.stringify({ content: content })
     });
     const data = await res.json();
     if (data.error) {

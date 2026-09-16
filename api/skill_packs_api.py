@@ -24,12 +24,35 @@ def api_skill_packs_list():
 
 @app.route("/api/skill-packs/import", methods=["POST"])
 def api_skill_packs_import():
-    """导入技能包"""
+    """导入技能包。
+    支持两种请求体：
+    1) 技能包 JSON：{id,name,type,description,content,...} -> 直接安装
+    2) 小说文本蒸馏：{novel_text: "..."} -> novel_distill 解析并批量安装
+    """
     try:
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
         if not data:
-            return jsonify({"error": "请求体为空"}), 400
+            return jsonify({"error": "请求体为空，请提供技能包 JSON 或小说文本"}), 400
 
+        # 小说文本蒸馏模式
+        novel_text = (data.get("novel_text") or "").strip()
+        if novel_text:
+            skill_type = data.get("skill_type", "technique")
+            distills = novel_distill(novel_text, skill_type=skill_type)
+            if not distills:
+                return jsonify({"error": "未能从文本中解析出技能包，请使用 markdown 风格分段（## 技能名 + 说明/用法）"}), 400
+            installed = []
+            for pack_data in distills:
+                pack = skill_manager.import_skill(pack_data)
+                installed.append(pack.to_dict())
+            return jsonify({
+                "status": "ok",
+                "count": len(installed),
+                "skills": installed,
+                "message": f"已从小说文本蒸馏并安装 {len(installed)} 个技能包",
+            })
+
+        # 直接导入技能包 JSON
         pack = skill_manager.import_skill(data)
         return jsonify({
             "status": "ok",

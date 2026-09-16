@@ -109,4 +109,4 @@ PORT=5000
 
 ## 开源协议
 
-本项目以 **MIT License** 发布，详见 [LICENSE](LICENSE)。第三方依赖均为宽松许可（MIT / BSD / Apache-2.0 / MPL / ZPL / PSF，无 GPL 传染），完整清单见 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)。
+本项目以 **GNU AGPL-3.0**（Affero GPL v3）发布，详见 [LICENSE](LICENSE)。使用、复制、修改、分发须遵循 AGPL-3.0 全部条款；修改版本须以 AGPL-3.0 重新授权并公开源码，以网络服务形式对外提供时须向用户提供对应完整源码。第三方依赖均为宽松许可（MIT / BSD / Apache-2.0 / MPL / ZPL / PSF），完整清单见 [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)。

@@ -47,7 +47,7 @@ docs/           # 设计文档与变更清单
 
 不想配置 Python 环境？可直接下载 Windows 免安装版：
 
-- **下载**：GitHub Releases 页面下载 `小说世界.exe`（约 18 MB，Windows 10/11 x64）
+- **下载**：GitHub Releases 页面下载 `novel-world.exe`（约 18 MB，Windows 10/11 x64）
 - **运行**：双击即可启动，无需安装 Python、无需安装任何依赖
 - **数据目录**：`.env`、`saves/`、`data/`、`output/`、`temp/` 会自动创建在 **EXE 同目录**下，便于备份与整体迁移
 - **模型配置**：首次运行时在界面填入任意 OpenAI 兼容 API Key（DeepSeek / OpenAI / Ollama / 豆包 / Kimi 均可）；或使用演示模式（`provider="none"`）不填 Key 直接体验完整流程
